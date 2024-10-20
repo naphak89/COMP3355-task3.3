@@ -61,13 +61,27 @@ int main()
     char password[48] = {0};
     char flags[48] = {0};
 
+    int i = 0;
+    char c;
     int user_name_fd = open("./user_name.txt", O_RDWR);
     if (user_name_fd == -1)
     {
         perror("open user_name.txt");
         exit(-1);
     }
-    close(user_name_fd);
+    while (read(user_name_fd, &c, 1) != -1)
+    {
+
+        if (c == '\n')
+            break;
+        if (i > 47)
+        {
+            exit(-1);
+        }
+        user_name[i] = c;
+        i++;
+    }
+    printf("Read %d bytes from user_name.txt\n", i);
 
     int password_fd = open("./password.txt", O_RDWR);
     if (password_fd == -1)
@@ -75,35 +89,15 @@ int main()
         perror("open password.txt");
         exit(-1);
     }
-    close(password_fd);
-
-    if (get_file_size("./user_name.txt") > 48 || get_file_size("./password.txt") > 48)
-    {
-        printf("File size too large.\n");
-        exit(-1);
-    }
-
-    sleep(10);
-
-    user_name_fd = open("./user_name.txt", O_RDWR);
-    password_fd = open("./password.txt", O_RDWR);
-
-    int i = 0;
-    char c;
-    while (read(user_name_fd, &c, 1) != -1)
-    {
-        if (c == '\n')
-            break;
-        user_name[i] = c;
-        i++;
-    }
-    printf("Read %d bytes from user_name.txt\n", i);
-
     i = 0;
     while (read(password_fd, &c, 1) != -1)
     {
         if (c == '\n')
             break;
+        if (i > 47)
+        {
+            exit(-1);
+        }
         password[i] = c;
         i++;
     }
@@ -130,4 +124,4 @@ int main()
     }
 }
 
-// gcc -g ./race_condition.c -o ./race_condition
+//  gcc -g ./race_condition.c -o ./race_condition
